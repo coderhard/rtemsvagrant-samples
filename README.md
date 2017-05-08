@@ -3,16 +3,20 @@ RTEMS Vagrant scripts with logging and samples build
 
 rtemsvagrant-samples
 =====================
-
 File: 		README.md
+
 Author:		Hassan.Karim @ Howard University
+
 Purpose:	This set of VAGRANTUP build scripts will download a suitable 
-			pre-built Ubuntu image from vagrant cloud and installl RTEMS 
-			development environment and operating system
-Prerequisite: On the host machine, 
+		pre-built Ubuntu image from vagrant cloud and installl RTEMS 
+		development environment and operating system
+
+Prerequisite: 	On the host machine, 
 		install vagrant from HashiCorp -- https://www.vagrantup.com/
 		install VirtualBox from Oracle -- https://www.virtualbox.org/
+
 Contents:	Vagrantfile, setup-rtems.sh, and sparc-build-rtems.sh
+
 Date:		2017-05-08
 
 Usage:
