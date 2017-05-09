@@ -60,7 +60,7 @@ C. # Once in the devbox
 ========================================================================
 
 ```bash
-rtems-devbox$ chmod u+x ./build-rtems.sh && ./build-rtems.sh
+rtems-devbox$ chmod u+x ./sparci386-build-rtems.sh && ./sparci386-build-rtems.sh
 ```
 1. This logs you into the new development box. where you will find build-rtems.sh
 2. The local file sparc-build-rtems.sh gets copied to rtems-devbox as build-rtems.sh
