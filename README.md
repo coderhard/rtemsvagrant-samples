@@ -1,22 +1,39 @@
 rtemsvagrant-samples
 =====================
 
-File: 		README.md
-Author:		Hassan.Karim @ Howard University
-Purpose:	This set of VAGRANTUP build scripts will download a suitable 
-			pre-built Ubuntu image from vagrant cloud and installl RTEMS 
-			development environment and operating system
-Prerequisite: On the host machine, 
-		install vagrant from HashiCorp -- https://www.vagrantup.com/
-		install VirtualBox from Oracle -- https://www.virtualbox.org/
-Contents:	Vagrantfile, setup-rtems.sh, and sparc-build-rtems.sh
-Date:		2017-05-08
+File:
+        README.md
+Author:
+        Hassan.Karim @ Howard University
+Purpose:
+        This set of VAGRANTUP build scripts will download a suitable
+        pre-built Ubuntu image from vagrant cloud and installl RTEMS
+        development environment and operating system
+
+Prerequisite:
+On the host machine,
+* install vagrant from HashiCorp -- https://www.vagrantup.com/
+* install VirtualBox from Oracle -- https://www.virtualbox.org/
+
+Contents:
+        Vagrantfile, setup-rtems.sh, and sparci386-build-rtems.sh
+Date:
+        2017-05-08
+
+Base Configuration:
+===================
+* Ubuntu Image = AMD64 "precise64"
+* Network Configuration = "private_network",  type: "dhcp"
+* Virtual Machine manager = "virtualbox"
+* Virtual Box Name = "rtems-devbox"
+* Number of Configured CPUS = 4
+* Amount of Configured Memory = 4096
 
 Usage:
 ======
 To run the rtems-devbox, or to do the intial setup, use the same command
 
-A. # From a command shell where the Vagrantfile resides. 
+A. # From a command shell where the Vagrantfile resides.
 ========================================================================
 ```bash
 host$ vagrant up
@@ -24,8 +41,8 @@ host$ vagrant up
 
 
 This is what happens in the background:
-1. setup-rtems.sh is executed from host machine 
-2. setup-rtems.sh downloads the Ubuntu Precise 64-bit image. 
+1. setup-rtems.sh is executed from host machine
+2. setup-rtems.sh downloads the Ubuntu Precise 64-bit image.
 3. setup-rtems.sh installs all of the latest ubuntu patches
 4. setup-rtems.sh installs all of the RTEMS related dependancies
 5. setup-rtems.sh clones the rtems git repositories
@@ -44,6 +61,6 @@ host$ vagrant ssh
 3. This will build sparc using erc32 BSP and i386 with pc386 BSP
 
 ```bash
-rtems-devbox$ chmod u+x ./build-rtems.sh && ./build-rtems.sh 
+rtems-devbox$ chmod u+x ./build-rtems.sh && ./build-rtems.sh
 ```
 
