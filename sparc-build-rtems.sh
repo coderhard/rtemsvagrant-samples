@@ -13,6 +13,7 @@ export PREFIX=$HOME/rtems/${RTEMS_VERSION}
 export PATH=$PREFIX/bin:$PATH
 export LOGFILE=$0.$(date +'%Y%m%d_%H%M').log
 export RT_CONFIG=$HOME/rtems
+export BASEDIR=$(pwd)
 
 hashline="###################################################################"
 echo $hashline | tee -a $LOGFILE
@@ -53,41 +54,71 @@ echo $hashline | tee -a $LOGFILE
 DATE=`date +'%Y%m%d_%H%M'`
 echo "## $0: $DATE: Starting Configure in rtems-build " | tee -a $LOGFILE
 echo $hashline | tee -a $LOGFILE
-cd ..; if[ ! -d rtems-build ] && mkdir rtems-build; cd rtems-build
-../rtems/configure \
-	--enable-tests=samples \
-	--target=${RTEMS_TARGET}-rtems${RTEMS_VERSION} \
-	--enable-rtemsbsp=${RTEMS_BSP} \
-	--prefix=${PREFIX}/${RTEMS_TARGET}
 
-echo $hashline | tee -a $LOGFILE
-DATE=`date +'%Y%m%d_%H%M'`
-echo "## $0: $DATE: Finished configure for ${RTEMS_VERSION}/rtems-${RTEMS_TARGET}" | tee -a $LOGFILE
-echo $hashline | tee -a $LOGFILE
+cd $BASEDIR; # Now we are in the base directory where installation begain
+[ ! -d rtems-build ] && mkdir rtems-build;
+cd rtems-build
+for target in ${RTEMS_TARGET}; do
+	if [ $target == "sparc" ]; then 
+		RTEMS_BSP="erc32"
+		$RT_CONFIG/configure \
+			--enable-tests=samples \
+			--target=${target}-rtems${RTEMS_VERSION} \
+			--enable-rtemsbsp=${RTEMS_BSP} \
+			--prefix=${PREFIX}/${RTEMS_TARGET}
+	elif [ $target == "i386" ]; then 
+		RTEMS_BSP="pc386"
+		$RT_CONFIG/configure \
+			--enable-tests=samples \
+			--target=${target}-rtems${RTEMS_VERSION} \
+			--enable-rtemsbsp=${RTEMS_BSP} \
+			--prefix=${PREFIX}/${RTEMS_TARGET}
+	else
+		$RT_CONFIG/configure \
+			--enable-tests=samples \
+			--target=${target}-rtems${RTEMS_VERSION} \
+			--prefix=${PREFIX}/${RTEMS_TARGET}
+	fi
 
-DATE=`date +'%Y%m%d_%H%M'`
-echo "## $0: $DATE: Starting make -j6 all" | tee -a $LOGFILE
-echo $hashline | tee -a $LOGFILE
 
-make -j8 -l3 all
+	echo $hashline | tee -a $LOGFILE
+	DATE=`date +'%Y%m%d_%H%M'`
+	echo "## $0: $DATE: Finished configure for ${RTEMS_VERSION}/rtems-${target}" | tee -a $LOGFILE
+	echo $hashline | tee -a $LOGFILE
 
-echo $hashline | tee -a $LOGFILE
-DATE=`date +'%Y%m%d_%H%M'`
-echo "## $0: $DATE: Finished make -j6 all" | tee -a $LOGFILE
-echo $hashline | tee -a $LOGFILE
-echo "## $0: $DATE: Starting make -j6 install" | tee -a $LOGFILE
-echo $hashline | tee -a $LOGFILE
-make -j4 install
+	DATE=`date +'%Y%m%d_%H%M'`
+	echo "## $0: $DATE: Starting make for ${RTEMS_VERSION}/rtems-${target}" | tee -a $LOGFILE
+	echo $hashline | tee -a $LOGFILE
 
-echo $hashline | tee -a $LOGFILE
-DATE=`date +'%Y%m%d_%H%M'`
-echo "## $0: $DATE: Finished make -j6 all" | tee -a $LOGFILE
-echo $hashline | tee -a $LOGFILE
+	make -j4 -l3
+
+	echo $hashline | tee -a $LOGFILE
+	DATE=`date +'%Y%m%d_%H%M'`
+	echo "## $0: $DATE: Finished make for ${RTEMS_VERSION}/rtems-${target}" | tee -a $LOGFILE
+	echo $hashline | tee -a $LOGFILE
+	echo "## $0: $DATE: Starting make tests ; make install for ${RTEMS_VERSION}/rtems-${target}" | tee -a $LOGFILE
+	echo $hashline | tee -a $LOGFILE
+	make -j4 tests
+	make -j4 install
+
+	echo $hashline | tee -a $LOGFILE
+	DATE=`date +'%Y%m%d_%H%M'`
+	echo "## $0: $DATE: Finished make tests ; make install for ${RTEMS_VERSION}/rtems-${target}" | tee -a $LOGFILE
+	echo $hashline | tee -a $LOGFILE
+done
 
 DATE=`date +'%Y%m%d_%H%M'`
 echo "## $0: $DATE: Updating the ENV PATH in .bashrc" | tee -a $LOGFILE
-echo "export PATH=${PREFIX}/bin:$PATH" >> ~/.bashrc
-echo "export RTEMS_MAKEFILE_PATH=${PREFIX}/${RTEMS_TARGET}/${RTEMS_TARGET}-rtems${RTEMS_VERSION}/${RTEMS_BSP}" >> ~/.bashrc
+cd $BASEDIR; # Now we are in the base directory where installation begain
+inpath=$(grep PATH=${PREFIX} ~/.bashrc )
+[ -z $inpath ] && echo "export PATH=${PREFIX}/bin:$PATH" >> ~/.bashrc
+
+mkfileinpath=$(grep RTEMS_MAKEFILE_PATH=${PREFIX} .bashrc )
+[ -z $mkfileinpath ] && echo \
+  "export RTEMS_MAKEFILE_PATH=${PREFIX}/${RTEMS_TARGET}/${RTEMS_TARGET}-rtems${RTEMS_VERSION}/${RTEMS_BSP}" >> ~/.bashrc
 source ~/.bashrc
+
+cd $BASEDIR/examples-v2
+make -j4
 DATE=`date +'%Y%m%d_%H%M'`
 echo "## $0: $DATE: COMPLETED" | tee -a $LOGFILE
